@@ -11,7 +11,10 @@ public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) //to mark id as a primary key and generate the ids sequesntially
     private Long id;
+    @Column(nullable = false)
     private String departmentName;
+    @Column(nullable = false)
     private String departmentDescription;
+    @Column(nullable = false, unique = true)
     private String departmentCode;
 }
