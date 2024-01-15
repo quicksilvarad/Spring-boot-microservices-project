@@ -1,5 +1,6 @@
 package com.quicksilvarad.employeeservice.controller;
 
+import com.quicksilvarad.employeeservice.DTO.APIResponseDTO;
 import com.quicksilvarad.employeeservice.DTO.EmployeeDTO;
 import com.quicksilvarad.employeeservice.entity.Employee;
 import com.quicksilvarad.employeeservice.service.EmployeeService;
@@ -27,9 +28,9 @@ public class EmployeeController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable("id") Long id)
+    public ResponseEntity<APIResponseDTO> getEmployeeById(@PathVariable("id") Long id)
     {
-        EmployeeDTO fetchedEmployee = employeeService.getEmployeeById(id);
+        APIResponseDTO fetchedEmployee = employeeService.getEmployeeById(id);
         return new ResponseEntity<>(fetchedEmployee,HttpStatus.OK);
     }
 }
