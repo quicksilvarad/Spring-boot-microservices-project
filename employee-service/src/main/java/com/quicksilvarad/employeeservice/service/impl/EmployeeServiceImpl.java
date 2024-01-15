@@ -2,6 +2,7 @@ package com.quicksilvarad.employeeservice.service.impl;
 
 import com.quicksilvarad.employeeservice.DTO.EmployeeDTO;
 import com.quicksilvarad.employeeservice.entity.Employee;
+import com.quicksilvarad.employeeservice.exception.ResourceNotFoundException;
 import com.quicksilvarad.employeeservice.repository.EmployeeRepository;
 import com.quicksilvarad.employeeservice.service.EmployeeService;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeDTO getEmployeeById(Long id) {
-        Employee employee = employeeRepository.findEmployeeById(id);
+        Employee employee = employeeRepository.findEmployeeById(id).orElseThrow(()-> new ResourceNotFoundException("Employee","Id",id));
         return modelMapper.map(employee,EmployeeDTO.class); }
 }
