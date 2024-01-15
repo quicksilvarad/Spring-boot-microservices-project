@@ -1,11 +1,16 @@
 package com.quicksilvarad.departmentservice.controller;
 
 import com.quicksilvarad.departmentservice.DTO.DepartmentDTO;
+import com.quicksilvarad.departmentservice.exception.ErrorDetails;
+import com.quicksilvarad.departmentservice.exception.ResourceNotFoundException;
 import com.quicksilvarad.departmentservice.service.DepartmentService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("api/departments")
@@ -26,4 +31,5 @@ public ResponseEntity<DepartmentDTO> getDepartment(@PathVariable("code") String 
     {
         return new ResponseEntity<>(departmentService.getDepartmentByCode(departmentCode),HttpStatus.OK);
     }
+
 }
