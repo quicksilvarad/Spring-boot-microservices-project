@@ -6,6 +6,7 @@ import com.quicksilvarad.employeeservice.DTO.EmployeeDTO;
 import com.quicksilvarad.employeeservice.entity.Employee;
 import com.quicksilvarad.employeeservice.exception.ResourceNotFoundException;
 import com.quicksilvarad.employeeservice.repository.EmployeeRepository;
+import com.quicksilvarad.employeeservice.service.APIClient;
 import com.quicksilvarad.employeeservice.service.EmployeeService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,9 +33,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     private ModelMapper modelMapper;
     //@Autowired
     //private RestTemplate restTemplate;
+    //@Autowired
+    //private WebClient webClient;
     @Autowired
-    private WebClient webClient;
-
+    private APIClient apiClient;
 
     @Override
     public EmployeeDTO saveEmployee(EmployeeDTO employeeDTO) {
@@ -49,7 +51,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = employeeRepository.findEmployeeById(id).orElseThrow(()-> new ResourceNotFoundException("Employee","Id",id));
         //ResponseEntity<DepartmentDTO> resposnseEntity = restTemplate.getForEntity("http://localhost:8080/api/departments/"+employee.getDepartmentCode(), DepartmentDTO.class);
         //DepartmentDTO departmentDTO = resposnseEntity.getBody();
-        DepartmentDTO departmentDTO=webClient.get().uri("http://localhost:8080/api/departments/"+employee.getDepartmentCode()).retrieve().bodyToMono(DepartmentDTO.class).block();
+        //DepartmentDTO departmentDTO=webClient.get().uri("http://localhost:8080/api/departments/"+employee.getDepartmentCode()).retrieve().bodyToMono(DepartmentDTO.class).block();
+        DepartmentDTO departmentDTO = apiClient.getDepartment(employee.getDepartmentCode());
         EmployeeDTO employeeDTO = modelMapper.map(employee,EmployeeDTO.class);
         APIResponseDTO apiResponseDTO = new APIResponseDTO(employeeDTO,departmentDTO);
         return apiResponseDTO; }
