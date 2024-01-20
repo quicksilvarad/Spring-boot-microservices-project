@@ -12,7 +12,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @SpringBootApplication
 @EnableFeignClients
-@EnableDiscoveryClient
 public class EmployeeServiceApplication {
 
 	@Bean
@@ -25,7 +24,6 @@ public class EmployeeServiceApplication {
 	//public RestTemplate restTemplate(){return new RestTemplate();}
 
 	@Bean
-	@LoadBalanced
 	public WebClient webClient(){
 		return WebClient.builder().build();
 	}
