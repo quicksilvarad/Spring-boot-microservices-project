@@ -8,11 +8,15 @@ import com.quicksilvarad.employeeservice.exception.ResourceNotFoundException;
 import com.quicksilvarad.employeeservice.repository.EmployeeRepository;
 import com.quicksilvarad.employeeservice.service.APIClient;
 import com.quicksilvarad.employeeservice.service.EmployeeService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
@@ -38,22 +42,37 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private APIClient apiClient;
 
+    @Autowired
+    private static final Logger LOGGER= LoggerFactory.getLogger(EmployeeServiceImpl.class);
     @Override
     public EmployeeDTO saveEmployee(EmployeeDTO employeeDTO) {
         //Employee employee = new Employee(employeeDTO.getId(),employeeDTO.getFirstName(),employeeDTO.getLastName(),employeeDTO.getEmail(),employeeDTO.getDesignation());
-        Employee employee = modelMapper.map(employeeDTO,Employee.class);
+        Employee employee = modelMapper.map(employeeDTO, Employee.class);
         Employee savedEmployee = employeeRepository.save(employee);
-        return modelMapper.map(savedEmployee,EmployeeDTO.class);
+        return modelMapper.map(savedEmployee, EmployeeDTO.class);
     }
 
     @Override
+    @Retry(name="${spring.application.name}" ,fallbackMethod = "getDefaultDepartment")
+    //@CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getDefaultDepartment")
     public APIResponseDTO getEmployeeById(Long id) {
-        Employee employee = employeeRepository.findEmployeeById(id).orElseThrow(()-> new ResourceNotFoundException("Employee","Id",id));
+        Employee employee = employeeRepository.findEmployeeById(id).orElseThrow(() -> new ResourceNotFoundException("Employee", "Id", id));
+        LOGGER.info("inside getEmployeeById");
         //ResponseEntity<DepartmentDTO> resposnseEntity = restTemplate.getForEntity("http://localhost:8080/api/departments/"+employee.getDepartmentCode(), DepartmentDTO.class);
         //DepartmentDTO departmentDTO = resposnseEntity.getBody();
         //DepartmentDTO departmentDTO=webClient.get().uri("http://localhost:8080/api/departments/"+employee.getDepartmentCode()).retrieve().bodyToMono(DepartmentDTO.class).block();
         DepartmentDTO departmentDTO = apiClient.getDepartment(employee.getDepartmentCode());
-        EmployeeDTO employeeDTO = modelMapper.map(employee,EmployeeDTO.class);
-        APIResponseDTO apiResponseDTO = new APIResponseDTO(employeeDTO,departmentDTO);
-        return apiResponseDTO; }
+        EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
+        APIResponseDTO apiResponseDTO = new APIResponseDTO(employeeDTO, departmentDTO);
+        return apiResponseDTO;
+    }
+
+    public APIResponseDTO getDefaultDepartment(Long id,Exception exception) {
+        LOGGER.warn("inside getDefaultDepartment");
+        Employee employee = employeeRepository.findEmployeeById(id).orElseThrow(() -> new ResourceNotFoundException("Employee", "Id", id));
+        EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
+        DepartmentDTO departmentDTO =  new DepartmentDTO(null,"Employee","Employee of the organisation","ED");
+        return new APIResponseDTO(employeeDTO,departmentDTO);
+    }
 }
+
