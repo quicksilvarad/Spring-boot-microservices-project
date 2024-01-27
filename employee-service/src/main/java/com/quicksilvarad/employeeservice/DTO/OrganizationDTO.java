@@ -5,17 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.print.DocFlavor;
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeDTO {
+@NoArgsConstructor
+public class OrganizationDTO {
     private Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String designation;
-    private String departmentCode;
+    private String organizationName;
+    private String organizationDescription;
     private String organizationCode;
+    private LocalDateTime organizationCreatedDate;
 }

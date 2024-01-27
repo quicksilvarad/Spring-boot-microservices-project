@@ -12,4 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface APIClient {
     @GetMapping("api/departments/{code}")
     DepartmentDTO getDepartment(@PathVariable("code") String departmentCode);
+
 }
+

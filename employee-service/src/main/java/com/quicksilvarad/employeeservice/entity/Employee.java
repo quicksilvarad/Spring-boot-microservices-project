@@ -27,4 +27,6 @@ public class Employee {
     private String designation;
     @Column(nullable = false)
     private String departmentCode;
+    @Column(nullable=false)
+    private String organizationCode;
 }

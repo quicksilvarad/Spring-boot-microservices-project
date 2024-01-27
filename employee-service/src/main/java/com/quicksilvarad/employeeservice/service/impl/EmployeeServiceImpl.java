@@ -3,10 +3,12 @@ package com.quicksilvarad.employeeservice.service.impl;
 import com.quicksilvarad.employeeservice.DTO.APIResponseDTO;
 import com.quicksilvarad.employeeservice.DTO.DepartmentDTO;
 import com.quicksilvarad.employeeservice.DTO.EmployeeDTO;
+import com.quicksilvarad.employeeservice.DTO.OrganizationDTO;
 import com.quicksilvarad.employeeservice.entity.Employee;
 import com.quicksilvarad.employeeservice.exception.ResourceNotFoundException;
 import com.quicksilvarad.employeeservice.repository.EmployeeRepository;
 import com.quicksilvarad.employeeservice.service.APIClient;
+import com.quicksilvarad.employeeservice.service.APIClient2;
 import com.quicksilvarad.employeeservice.service.EmployeeService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
@@ -37,10 +39,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     private ModelMapper modelMapper;
     //@Autowired
     //private RestTemplate restTemplate;
-    //@Autowired
-    //private WebClient webClient;
+    @Autowired
+    private WebClient webClient;
     @Autowired
     private APIClient apiClient;
+
+    @Autowired
+    private APIClient2 apiClient2;
 
     @Autowired
     private static final Logger LOGGER= LoggerFactory.getLogger(EmployeeServiceImpl.class);
@@ -61,9 +66,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         //ResponseEntity<DepartmentDTO> resposnseEntity = restTemplate.getForEntity("http://localhost:8080/api/departments/"+employee.getDepartmentCode(), DepartmentDTO.class);
         //DepartmentDTO departmentDTO = resposnseEntity.getBody();
         //DepartmentDTO departmentDTO=webClient.get().uri("http://localhost:8080/api/departments/"+employee.getDepartmentCode()).retrieve().bodyToMono(DepartmentDTO.class).block();
+        //OrganizationDTO organizationDTO=webClient.get().uri("http://localhost:8084/api/organizations/"+employee.getOrganizationCode()).retrieve().bodyToMono(OrganizationDTO.class).block();
         DepartmentDTO departmentDTO = apiClient.getDepartment(employee.getDepartmentCode());
+        LOGGER.info("after departmentDTO request");
+        OrganizationDTO organizationDTO = apiClient2.getOrganization(employee.getOrganizationCode());
         EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
-        APIResponseDTO apiResponseDTO = new APIResponseDTO(employeeDTO, departmentDTO);
+
+        APIResponseDTO apiResponseDTO = new APIResponseDTO(employeeDTO, departmentDTO,organizationDTO);
         return apiResponseDTO;
     }
 
@@ -72,7 +81,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = employeeRepository.findEmployeeById(id).orElseThrow(() -> new ResourceNotFoundException("Employee", "Id", id));
         EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
         DepartmentDTO departmentDTO =  new DepartmentDTO(null,"Employee","Employee of the organisation","ED");
-        return new APIResponseDTO(employeeDTO,departmentDTO);
+        OrganizationDTO organizationDTO =  new OrganizationDTO(null,"Laxmi Chit Fund","Are mujhe chakkar aa rahe hain","ITUS",null);
+        return new APIResponseDTO(employeeDTO,departmentDTO,organizationDTO);
     }
+
+
 }
 
