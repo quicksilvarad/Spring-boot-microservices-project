@@ -39,8 +39,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private ModelMapper modelMapper;
     //@Autowired
     //private RestTemplate restTemplate;
-    @Autowired
-    private WebClient webClient;
+    //@Autowired
+    //private WebClient webClient;
     @Autowired
     private APIClient apiClient;
 
